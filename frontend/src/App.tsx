@@ -1,4 +1,4 @@
-import React from 'react';
+// Project: Alumni Network App
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout';
 import { Home } from './pages/home';
