@@ -11,7 +11,7 @@ const alumSchema = new mongoose.Schema({
             companyName: { type: String, required: true },
             position: { type: String, required: true },
             startDate: { type: String, required: true },
-            endDate: { type: String, default: "present" }
+            endDate: { type: String, default: "Present" }
         }
     ]
 });
