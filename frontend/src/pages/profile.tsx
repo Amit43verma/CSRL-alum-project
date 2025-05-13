@@ -1,55 +1,72 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+
 
 export function Profile() {
-  const { id } = useParams();
+  const location = useLocation();
+  const alum = location.state?.alum;
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         {/* Cover Photo */}
         <div className="h-48 bg-gradient-to-r from-blue-500 to-blue-600"></div>
-        
+
         {/* Profile Info */}
         <div className="relative px-6 pb-6">
           <div className="flex items-end absolute -top-16">
             <img
-              src={`https://source.unsplash.com/random/128x128?portrait`}
+              src={alum.profilePicture || '/default-avatar.png'}
               alt="Profile"
               className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800"
             />
           </div>
-          
-          <div className="mt-20">
-            <h1 className="text-2xl font-bold dark:text-white">John Doe</h1>
-            <p className="text-gray-600 dark:text-gray-400">Software Engineer at Tech Corp</p>
-            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">CSRL Center: Bangalore | Batch: 2020</p>
+
+          <div className="mt-20 ml-40">
+            <h1 className="text-2xl font-bold dark:text-white">{alum.name}</h1>
+            <p className="text-gray-600 dark:text-gray-400">{alum.experiences?.[0]?.position} at {alum.experiences?.[0]?.companyName}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">CSRL Center: {alum.csrlCenter} | Batch: {alum.batch}</p>
           </div>
 
           <div className="mt-6">
             <h2 className="text-lg font-semibold dark:text-white">About</h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Passionate software engineer with 3+ years of experience in full-stack development.
-              Graduate of CSRL's intensive programming course. Currently working on scalable
-              cloud solutions at Tech Corp.
+              {alum.about}
             </p>
           </div>
 
           <div className="mt-6">
             <h2 className="text-lg font-semibold dark:text-white">Experience</h2>
             <div className="mt-4 space-y-4">
-              <div className="border-l-2 border-blue-500 pl-4">
-                <h3 className="font-medium dark:text-white">Software Engineer</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Tech Corp</p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">2020 - Present</p>
-              </div>
-              <div className="border-l-2 border-blue-500 pl-4">
-                <h3 className="font-medium dark:text-white">Junior Developer</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">StartUp Inc</p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">2019 - 2020</p>
-              </div>
+              {alum.experiences && alum.experiences.length > 0 ? (
+                [...alum.experiences]
+                  .sort((a: any, b: any) => {
+                    const getYear = (date: string) => date.toLowerCase() === 'present' ? 9999 : parseInt(date);
+                    const aEnd = getYear(a.endDate);
+                    const bEnd = getYear(b.endDate);
+
+                    if (aEnd !== bEnd) return bEnd - aEnd;
+
+                    const aStart = getYear(a.startDate);
+                    const bStart = getYear(b.startDate);
+
+                    return bStart - aStart;
+                  })
+                  .map((exp: any, index: number) => (
+                    <div key={index} className="border-l-2 border-blue-500 pl-4">
+                      <h3 className="font-medium dark:text-white">{exp.position}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{exp.companyName}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-500">
+                        {exp.startDate} - {exp.endDate}
+                      </p>
+                    </div>
+                  ))
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400">No experience added.</p>
+              )}
             </div>
           </div>
+
+
         </div>
       </div>
 

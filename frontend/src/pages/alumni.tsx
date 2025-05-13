@@ -78,6 +78,7 @@ export function Alumni() {
             <Link
               key={alum._id}
               to={`/profile/${alum._id}`}
+              state={{ alum }}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
             >
               <div className="flex items-center">
