@@ -6,7 +6,7 @@ const app = express();
 const connectDB = require('./db/db');
 const cookieParser = require('cookie-parser');
 const alumRoutes = require('./routes/alum.route');
-// const feedRoutes = require('./routes/feed.route');
+const feedRoutes = require('./routes/feed.route');
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -21,7 +21,8 @@ app.get('/', (req, res)=>{
 })
 
 app.use('/alum', alumRoutes);
-// app.use('/feed', feedRoutes);
+app.use('/feed', feedRoutes);
+
 
 
 module.exports = app;
