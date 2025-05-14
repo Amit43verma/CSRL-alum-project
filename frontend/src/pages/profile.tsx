@@ -9,32 +9,36 @@ export function Profile() {
     <div className="max-w-4xl mx-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         {/* Cover Photo */}
-        <div className="h-48 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+        {/* <div className="h-48 bg-gradient-to-r from-red-500 to-blue-600"></div> */}
+        <img src="https://media.sproutsocial.com/uploads/1c-LinkedIn-Banner-Personal-design-1.png" alt="" />
 
         {/* Profile Info */}
-        <div className="relative px-6 pb-6">
-          <div className="flex items-end absolute -top-16">
+        <div className="px-6 pb-6 mt-10">
+          <div className="flex items-center space-x-6">
             <img
               src={alum.profilePicture || '/default-avatar.png'}
               alt="Profile"
-              className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800"
+              className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-800 object-cover"
             />
+            <div className="flex flex-col justify-center h-32">
+              <h1 className="text-2xl font-semibold dark:text-white font-sans leading-tight">
+                {alum.name}
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-base mt-1">Student at NSUT</p>
+              <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                CSRL Center: {alum.csrlCenter} | Batch: {alum.batch}
+              </p>
+            </div>
           </div>
 
-          <div className="mt-20 ml-40">
-            <h1 className="text-2xl font-bold dark:text-white">{alum.name}</h1>
-            <p className="text-gray-600 dark:text-gray-400">{alum.experiences?.[0]?.position} at {alum.experiences?.[0]?.companyName}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">CSRL Center: {alum.csrlCenter} | Batch: {alum.batch}</p>
-          </div>
-
-          <div className="mt-6">
+          <div className="mt-6 ml-2">
             <h2 className="text-lg font-semibold dark:text-white">About</h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
               {alum.about}
             </p>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-6 mb-3 ml-2">
             <h2 className="text-lg font-semibold dark:text-white">Experience</h2>
             <div className="mt-4 space-y-4">
               {alum.experiences && alum.experiences.length > 0 ? (
@@ -65,8 +69,6 @@ export function Profile() {
               )}
             </div>
           </div>
-
-
         </div>
       </div>
 
