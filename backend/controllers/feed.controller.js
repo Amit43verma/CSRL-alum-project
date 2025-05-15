@@ -1,24 +1,56 @@
 // backend/controllers/feed.controller.js
 const Feed = require("../models/feed.model");
 
+// exports.createFeed = async (req, res) => {
+//   try {
+//     const feed = new Feed(req.body);
+//     await feed.save();
+//     res.status(201).json(feed);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
 exports.createFeed = async (req, res) => {
   try {
-    const feed = new Feed(req.body);
-    await feed.save();
-    res.status(201).json(feed);
+    const { userId, content } = req.body;
+
+    const newFeed = new Feed({ userId, content });
+    await newFeed.save();
+
+    res.status(201).json(newFeed);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+
+// exports.getAllFeeds = async (req, res) => {
+//   try {
+//     const feeds = await Feed.find().sort({ createdAt: -1 });
+//     res.status(200).json(feeds);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+
 exports.getAllFeeds = async (req, res) => {
   try {
-    const feeds = await Feed.find().sort({ createdAt: -1 });
+    // const feeds = await Feed.find()
+    //   .populate('userId', 'name profilePhotoUrl experiences')
+    //   .sort({ createdAt: -1 });
+
+    const feeds = await Feed.find()
+  .populate('userId', 'name profilePhotoUrl experiences')
+  .sort({ updatedAt: -1 });
+
     res.status(200).json(feeds);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 // Get feeds by userId

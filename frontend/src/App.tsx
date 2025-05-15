@@ -1,7 +1,7 @@
 // Project: Alumni Network App
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/layout';
-import { Home } from './pages/home';
+import  Home  from './pages/home';
 import { Profile } from './pages/profile';
 import { Alumni } from './pages/alumni';
 import { Chat } from './pages/chat';
