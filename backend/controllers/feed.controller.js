@@ -81,3 +81,80 @@ exports.getFeedByUserId = async (req, res) => {
 //     res.status(500).json({ error: err.message });
 //   }
 // }
+
+
+
+
+
+// backend/controllers/feed.controller.js
+// const Feed = require("../models/feed.model");
+
+// Like or unlike a post
+exports.toggleLike = async (req, res) => {
+  try {
+    const { feedId } = req.params;
+    const userId = req.body.userId; // current user
+
+    const feed = await Feed.findById(feedId);
+    if (!feed) return res.status(404).json({ message: "Feed not found" });
+
+    const idx = feed.likes.indexOf(userId);
+    if (idx === -1) {
+      feed.likes.push(userId);
+    } else {
+      feed.likes.splice(idx, 1);
+    }
+
+    await feed.save();
+    res.json({ likesCount: feed.likes.length, liked: idx === -1 });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Add a comment
+exports.addComment = async (req, res) => {
+  try {
+    const { feedId } = req.params;
+    const { userId, text } = req.body;
+
+    const feed = await Feed.findById(feedId);
+    if (!feed) return res.status(404).json({ message: "Feed not found" });
+
+    feed.comments.push({ userId, text });
+    await feed.save();
+
+    const newComment = feed.comments[feed.comments.length - 1];
+    res.status(201).json(newComment);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+// Delete a comment
+// backend/controllers/feed.controller.js
+exports.deleteComment = async (req, res) => {
+  try {
+    const { feedId, commentId } = req.params;
+    const userId = req.body.userId;  // current user
+
+    const feed = await Feed.findById(feedId);
+    if (!feed) return res.status(404).json({ message: "Feed not found" });
+
+    // Find the comment
+    const comment = feed.comments.id(commentId);
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
+    if (comment.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Not authorized to delete this comment" });
+    }
+
+    // Remove it
+    comment.remove();
+    await feed.save();
+
+    res.json({ commentId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
