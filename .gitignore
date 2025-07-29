@@ -7,7 +7,7 @@ client/build/
 server/dist/
 client/dist/
 
-vscode
+.vscode
 
 # Ignore environment files
 server/.env
