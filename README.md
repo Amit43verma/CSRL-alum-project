@@ -1,5 +1,4 @@
-# MERN Alumni Portal - WhatsApp-like Chat Features
-Live URL: https://alumni-portal-frontend-vdvb.onrender.com
+# CSRL Alumni Portal
 
 A comprehensive alumni portal with real-time chat functionality featuring WhatsApp-like features.
 
