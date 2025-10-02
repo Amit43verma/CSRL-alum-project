@@ -239,7 +239,7 @@ const usePostStore = create((set, get) => ({
   likePost: async (postId) => {
     try {
       const response = await axios.post(`${API_URL}/posts/${postId}/like`)
-      const { liked, likesCount } = response.data
+      const { liked, likesCount, likedUserIds } = response.data
 
       const { socket } = get()
       if (socket) {
@@ -256,7 +256,7 @@ const usePostStore = create((set, get) => ({
             : state.currentPost,
       }))
 
-      return { success: true }
+      return { success: true, liked, likesCount, likedUserIds }
     } catch (error) {
       toast.error("Failed to like post")
       return { success: false }
