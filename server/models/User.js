@@ -64,9 +64,26 @@ const userSchema = new mongoose.Schema(
       github: String,
       twitter: String,
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    // Email ownership verification flag
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    // Admin approval status for platform access
+    approvalStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      // Keep existing users working; new signups will explicitly set to "pending"
+      default: "approved",
+    },
+    rejectionReason: {
+      type: String,
+      default: null,
     },
     otp: {
       type: String,

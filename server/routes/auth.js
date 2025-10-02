@@ -112,7 +112,7 @@ router.post("/verify-otp", async (req, res) => {
       return res.status(400).json({ message: "User already exists with this email" })
     }
 
-    // Create user in main User collection
+    // Create user in main User collection with pending admin approval
     const user = new User({
       name: pendingUser.name,
       email: pendingUser.email,
@@ -120,25 +120,18 @@ router.post("/verify-otp", async (req, res) => {
       batch: pendingUser.batch,
       center: pendingUser.center,
       isVerified: true,
+      role: "user",
+      approvalStatus: "pending",
     })
     await user.save()
 
     // Remove pending user
     await PendingUser.deleteOne({ email })
 
-    const token = generateToken(user._id)
-
+    // Do not log the user in yet; wait for admin approval
     res.json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        batch: user.batch,
-        center: user.center,
-        avatarUrl: user.avatarUrl,
-      },
+      message: "Email verified successfully. Your registration is pending admin approval.",
+      pendingApproval: true,
     })
   } catch (error) {
     console.error("OTP verification error:", error)
@@ -153,12 +146,10 @@ router.post("/resend-otp", async (req, res) => {
       return res.status(400).json({ message: "Email is required" })
     }
 
-    const user = await User.findOne({ email })
-    if (!user) {
-      return res.status(400).json({ message: "User not found" })
-    }
-    if (user.isVerified) {
-      return res.status(400).json({ message: "Email is already verified" })
+    // Look up pending verification
+    const pending = await PendingUser.findOne({ email })
+    if (!pending) {
+      return res.status(400).json({ message: "No pending verification found for this email" })
     }
 
     const otp = otpGenerator.generate(6, {
@@ -168,13 +159,13 @@ router.post("/resend-otp", async (req, res) => {
     })
     const otpExpires = Date.now() + 10 * 60 * 1000 // 10 minutes
 
-    user.otp = otp
-    user.otpExpires = otpExpires
-    await user.save({ validateBeforeSave: false })
+    pending.otp = otp
+    pending.otpExpires = otpExpires
+    await pending.save()
 
     try {
       await sendEmail({
-        email: user.email,
+        email: pending.email,
         subject: "Resend: Verify your email for Alumni Portal",
         html: `<p>Your new OTP for email verification is: <h1>${otp}</h1> It is valid for 10 minutes.</p>`,
       })
@@ -216,6 +207,20 @@ router.post("/login", async (req, res) => {
       })
     }
 
+    // Block login until admin approves
+    if (user.approvalStatus && user.approvalStatus !== "approved") {
+      const payload = { message: "Your registration is pending admin approval." }
+      if (user.approvalStatus === "pending") {
+        return res.status(403).json({ ...payload, approvalPending: true })
+      }
+      if (user.approvalStatus === "rejected") {
+        return res.status(403).json({
+          message: user.rejectionReason || "Your registration request was rejected by admin.",
+          approvalRejected: true,
+        })
+      }
+    }
+
     const isMatch = await user.comparePassword(password)
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" })
@@ -233,6 +238,7 @@ router.post("/login", async (req, res) => {
         batch: user.batch,
         center: user.center,
         avatarUrl: user.avatarUrl,
+        role: user.role,
       },
     })
   } catch (error) {
@@ -350,6 +356,7 @@ router.get("/me", authenticate, async (req, res) => {
       bio: req.user.bio,
       skills: req.user.skills,
       socialLinks: req.user.socialLinks,
+      role: req.user.role,
     },
   })
 })

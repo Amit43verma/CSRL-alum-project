@@ -24,6 +24,10 @@ const Login = () => {
     const result = await login(data.identifier, data.password)
     if (result.notVerified) {
       navigate("/verify-otp", { state: { email: result.email } })
+    } else if (result.approvalPending) {
+      setLoginError("Your registration is pending admin approval.")
+    } else if (result.approvalRejected) {
+      setLoginError(result.message || "Your registration was rejected.")
     } else if (!result.success) {
       setLoginError("Invalid credentials")
     }
