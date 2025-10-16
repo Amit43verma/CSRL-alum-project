@@ -38,14 +38,19 @@ const useAuthStore = create((set, get) => ({
       return { success: true }
     } catch (error) {
       set({ loading: false })
-      const message = error.response?.data?.message || "Login failed"
-      if (error.response?.data?.notVerified) {
+      const data = error.response?.data || {}
+      const message = data.message || "Login failed"
+      if (data.notVerified) {
         toast.error(message, { id: "login-error" })
-        return {
-          success: false,
-          notVerified: true,
-          email: error.response.data.email,
-        }
+        return { success: false, notVerified: true, email: data.email }
+      }
+      if (data.approvalPending) {
+        toast.error("Your registration is pending admin approval.")
+        return { success: false, approvalPending: true }
+      }
+      if (data.approvalRejected) {
+        toast.error(message)
+        return { success: false, approvalRejected: true, message }
       }
       toast.error(message)
       return { success: false, message }

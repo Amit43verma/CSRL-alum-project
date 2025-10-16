@@ -29,8 +29,10 @@ const OtpVerification = () => {
     setLoading(true)
     try {
       const response = await axios.post(`${API_URL}/auth/verify-otp`, { email, otp })
-      loginSuccess(response.data)
-      navigate("/") // Redirect to feed on successful verification
+      // Do not auto-login; wait for admin approval
+      setResendMessage(response.data.message || "Email verified. Pending admin approval.")
+      // Redirect to login after short delay
+      setTimeout(() => navigate("/login"), 1200)
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred.")
     } finally {

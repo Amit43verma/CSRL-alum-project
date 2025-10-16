@@ -1,12 +1,14 @@
 "use client"
 
 import { Link, useLocation } from "react-router-dom"
-import { Home, MessageCircle, Users, Search, User, X, Bookmark } from "lucide-react"
+import { Home, MessageCircle, Users, Search, User, X, Bookmark, Shield } from "lucide-react"
 import useChatStore from "../store/chatStore"
 
 const Sidebar = ({ onClose }) => {
   const location = useLocation()
-  const userId = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).id : null
+  const userObj = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null
+  const userId = userObj?.id || null
+  const isAdmin = userObj?.role === "admin"
   const { unreadCounts } = useChatStore()
 
   const totalUnreadCount = Object.values(unreadCounts).reduce((sum, count) => sum + count, 0)
@@ -24,6 +26,10 @@ const Sidebar = ({ onClose }) => {
     { path: "/saved-posts", icon: Bookmark, label: "Saved Posts" },
     { path: userId ? `/profile/${userId}` : "/login", icon: User, label: "Profile" },
   ]
+
+  if (isAdmin) {
+    menuItems.splice(1, 0, { path: "/admin", icon: Shield, label: "Admin" })
+  }
 
   return (
     <div className="h-full flex flex-col bg-base-200">

@@ -139,6 +139,13 @@ const Header = ({ onMenuClick }) => {
               tabIndex={0}
               className="dropdown-content menu p-2 shadow-xl bg-base-100 border border-base-300 rounded-box w-52 mt-2 z-50"
             >
+              {user?.role === "admin" && (
+                <li>
+                  <Link to="/admin" className="flex items-center space-x-2">
+                    <span>Admin Dashboard</span>
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link to={`/profile/${user?.id}`} className="flex items-center space-x-2">
                   <User size={16} />

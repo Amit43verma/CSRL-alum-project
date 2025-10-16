@@ -6,6 +6,7 @@ const { Server } = require("socket.io")
 require("dotenv").config()
 
 const authRoutes = require("./routes/auth")
+const adminRoutes = require("./routes/admin")
 const userRoutes = require("./routes/users")
 const postRoutes = require("./routes/posts")
 const chatRoutes = require("./routes/chat")
@@ -50,6 +51,7 @@ app.use("/uploads", express.static("uploads"))
 
 // Routes
 app.use("/api/auth", authRoutes)
+app.use("/api/admin", adminRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/posts", postRoutes)
 app.use("/api/chat", chatRoutes)
@@ -57,7 +59,36 @@ app.use("/api/chat", chatRoutes)
 // Database connection
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
+  .then(async () => {
+    console.log("MongoDB connected")
+    // Seed default admin if not exists
+    try {
+      const adminEmail = "singh@gmail.com"
+      const existingAdmin = await User.findOne({ email: adminEmail })
+      if (!existingAdmin) {
+        const admin = new User({
+          name: "Admin",
+          email: adminEmail,
+          password: "12345@12",
+          batch: "N/A",
+          center: "Admin",
+          role: "admin",
+          isVerified: true,
+          approvalStatus: "approved",
+        })
+        await admin.save()
+        console.log("Default admin user created:", adminEmail)
+      } else if (existingAdmin.role !== "admin") {
+        existingAdmin.role = "admin"
+        existingAdmin.isVerified = true
+        existingAdmin.approvalStatus = "approved"
+        await existingAdmin.save()
+        console.log("Existing user updated to admin:", adminEmail)
+      }
+    } catch (seedErr) {
+      console.error("Error ensuring default admin:", seedErr)
+    }
+  })
   .catch((err) => console.error("MongoDB connection error:", err))
 
 // Attach io to app for access in routes

@@ -53,20 +53,14 @@ const SavedPosts = () => {
 
   const handleLike = async (postId) => {
     setLiking(postId)
-    await likePost(postId)
+    const result = await likePost(postId)
     setLiking("")
-    // Optionally, update the local savedPosts state to reflect the new like count
-    setSavedPosts((prev) =>
-      prev.map((p) =>
-        p._id === postId
-          ? {
-              ...p,
-              isLiked: !p.isLiked,
-              likesCount: p.isLiked ? p.likesCount - 1 : p.likesCount + 1,
-            }
-          : p
+    if (result?.success) {
+      const { liked, likesCount } = result
+      setSavedPosts((prev) =>
+        prev.map((p) => (p._id === postId ? { ...p, isLiked: liked, likesCount } : p))
       )
-    )
+    }
   }
 
   if (loading) {

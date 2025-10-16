@@ -46,3 +46,15 @@ const authenticateSocket = async (socket, next) => {
 }
 
 module.exports = { authenticate, authenticateSocket }
+
+// Require admin role middleware
+module.exports.requireAdmin = (req, res, next) => {
+  try {
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin access required" })
+    }
+    next()
+  } catch (err) {
+    return res.status(403).json({ message: "Admin access required" })
+  }
+}

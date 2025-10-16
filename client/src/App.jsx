@@ -10,6 +10,7 @@ import { usePostStore } from "./store/postStore"
 // Components
 import Layout from "./components/Layout"
 import ProtectedRoute from "./components/ProtectedRoute"
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute"
 
 // Lazy load pages for better performance
 const Login = lazy(() => import("./pages/Login"))
@@ -26,6 +27,7 @@ const OtpVerification = lazy(() => import("./pages/OtpVerification"))
 const SavedPosts = lazy(() => import("./pages/SavedPosts"))
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"))
 const ResetPassword = lazy(() => import("./pages/ResetPassword"))
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"))
 
 // Loading component
 const LoadingPage = () => (
@@ -73,6 +75,14 @@ function App() {
             <Route path="/verify-otp" element={<OtpVerification />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedAdminRoute>
+                  <AdminDashboard />
+                </ProtectedAdminRoute>
+              }
+            />
 
             <Route
               path="/"
