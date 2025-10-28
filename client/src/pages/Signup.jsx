@@ -131,7 +131,7 @@ const Signup = () => {
                   }}
                   style={{ appearance: 'none' }}
                 >
-                  {Array.from({ length: currentYear - 2010 }, (_, i) => currentYear - i - 1).map(year => (
+                  {Array.from({ length: currentYear - 2008 }, (_, i) => currentYear - i - 1).map(year => (
                     <option key={year} value={year}>{year}-{year + 1}</option>
                   ))}
                 </select>
@@ -161,19 +161,50 @@ const Signup = () => {
               )}
             </div>
 
-            {/* Center */}
+           {/* Center */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Center</span>
               </label>
-              <input
-                type="text"
-                placeholder="e.g., Mumbai, Delhi, Bangalore"
-                className={`input input-bordered ${errors.center ? "input-error" : ""}`}
+              <select
+                // Use defaultValue to show the placeholder. The empty value ensures the "required" validation works.
+                defaultValue=""
+                className={`select select-bordered w-full ${errors.center ? "select-error" : ""}`}
                 {...register("center", {
-                  required: "Center is required",
+                  required: "Please select a center",
                 })}
-              />
+              >
+                {/* This is the placeholder option */}
+                <option disabled value="">
+                  Select Center
+                </option>
+
+                {/* Add your actual location options below */}
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Kolkata">Kolkata</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Jorhat">Jorhat</option>
+                <option value="Dibrugarh">Dibrugarh</option>
+                <option value="Guwahati">Guwahati</option>
+                <option value="Nagaon">Nagaon</option>
+                <option value="Itanagar">Itanagar</option>
+                <option value="Jodhpur">Jodhpur</option>
+                <option value="Srinagar">Srinagar</option>
+                <option value="Sivasagar">Sivasagar</option>
+                <option value="Kangra">Kangra</option>
+                <option value="Almora">Almora</option>
+                <option value="Agartala">Agartala</option>
+                <option value="Golaghat">Golaghat</option>
+                <option value="Kanpur">Kanpur</option>
+                <option value="Varanasi">Varanasi</option>
+                <option value="Haldwani">Haldwani</option>
+                <option value="Jammu">Jammu</option>
+                <option value="Dehradun">Dehradun</option>    
+                
+              </select>
+
+              {/* The error message logic remains the same */}
               {errors.center && (
                 <label className="label">
                   <span className="label-text-alt text-error">{errors.center.message}</span>

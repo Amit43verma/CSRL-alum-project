@@ -30,7 +30,8 @@ const Search = () => {
   }, [loadFilterOptions])
 
   useEffect(() => {
-    const searchFilters = {}
+    // Always filter for approved users by default
+    const searchFilters = { status: "approved" }
     if (selectedBatch) searchFilters.batch = selectedBatch
     if (selectedCenter) searchFilters.center = selectedCenter
 
@@ -333,3 +334,4 @@ const Search = () => {
 }
 
 export default Search
+
