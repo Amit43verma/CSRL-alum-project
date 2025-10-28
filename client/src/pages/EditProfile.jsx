@@ -2,7 +2,21 @@
 
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { User, Mail, Phone, MapPin, Calendar, Plus, Trash2, Github, Linkedin, Twitter, Save, X } from "lucide-react"
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Plus,
+  Trash2,
+  Github,
+  Linkedin,
+  Twitter,
+  Save,
+  X,
+  ArrowLeft, // 1. Imported ArrowLeft icon
+} from "lucide-react"
 import { useForm } from "react-hook-form"
 import { useUserStore } from "../store/userStore"
 import { useAuthStore } from "../store/authStore"
@@ -129,21 +143,15 @@ const EditProfile = () => {
     formData.append("center", data.center)
     formData.append("bio", data.bio)
 
-    // Social links
     const socialLinks = {
       linkedin: data.linkedin || "",
       github: data.github || "",
       twitter: data.twitter || "",
     }
     formData.append("socialLinks", JSON.stringify(socialLinks))
-
-    // Skills
     formData.append("skills", JSON.stringify(skills))
-
-    // Experiences
     formData.append("experiences", JSON.stringify(experiences))
 
-    // Avatar
     if (avatarFile) {
       formData.append("avatar", avatarFile)
     }
@@ -151,7 +159,6 @@ const EditProfile = () => {
     try {
       const result = await updateProfile(user.id, formData)
       if (result.success) {
-        // Update user in auth store
         updateUser({
           name: data.name,
           email: data.email,
@@ -160,14 +167,10 @@ const EditProfile = () => {
           center: data.center,
           avatarUrl: result.user.avatarUrl,
         })
-
-        // Show success notification
         setNotification({
           type: "success",
           message: "Profile updated successfully!",
         })
-
-        // Navigate after a short delay
         setTimeout(() => {
           navigate(`/profile/${user.id}`)
         }, 2000)
@@ -194,32 +197,12 @@ const EditProfile = () => {
         <div className={`alert ${notification.type === "success" ? "alert-success" : "alert-error"}`}>
           <div>
             {notification.type === "success" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current flex-shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current flex-shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             )}
             <span>{notification.message}</span>
@@ -229,7 +212,19 @@ const EditProfile = () => {
 
       <div className="card bg-base-100 shadow-lg">
         <div className="card-body">
-          <h2 className="text-2xl font-bold mb-6">Edit Profile</h2>
+          {/* 2. Added a flex container for the title and back button */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Edit Profile</h2>
+            {/* 3. Added the "Go Back" button with navigation logic */}
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="btn btn-ghost btn-sm"
+            >
+              <ArrowLeft size={16} />
+              Back
+            </button>
+          </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Avatar */}

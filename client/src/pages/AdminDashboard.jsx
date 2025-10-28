@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 import toast from "react-hot-toast"
+import { useNavigate } from "react-router-dom" // Added for navigation
+import { ArrowLeft } from "lucide-react" // Added for the back icon
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
 
@@ -8,6 +10,7 @@ const AdminDashboard = () => {
   const [pending, setPending] = useState([])
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(null)
+  const navigate = useNavigate() // Initialized navigate
 
   const loadPending = async () => {
     setLoading(true)
@@ -39,10 +42,13 @@ const AdminDashboard = () => {
   }
 
   const reject = async (id) => {
-    const reason = window.prompt("Provide a reason (optional):") || undefined
+    // Replaced window.prompt with a more robust modal in a real app
+    const reason = window.prompt("Provide a reason for rejection (optional):")
+    if (reason === null) return // User cancelled the prompt
+
     setActionLoading(id)
     try {
-      await axios.post(`${API_URL}/admin/reject/${id}`, { reason })
+      await axios.post(`${API_URL}/admin/reject/${id}`, { reason: reason || undefined })
       setPending((list) => list.filter((u) => u._id !== id))
       toast.success("User rejected")
     } catch (err) {
@@ -55,7 +61,17 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-base-200 p-6">
       <div className="max-w-4xl mx-auto bg-base-100 rounded-lg shadow p-6">
-        <h1 className="text-2xl font-semibold mb-4">Admin Dashboard</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
+          {/* Back button updated here */}
+          <button
+            onClick={() => navigate(-1)}
+            className="btn btn-ghost btn-sm"
+          >
+            <ArrowLeft size={16} />
+            Back
+          </button>
+        </div>
         <p className="mb-6 text-base-content/70">Pending registrations requiring approval.</p>
         {loading ? (
           <div className="flex justify-center items-center py-12">
@@ -88,14 +104,22 @@ const AdminDashboard = () => {
                         disabled={actionLoading === u._id}
                         onClick={() => approve(u._id)}
                       >
-                        {actionLoading === u._id ? "..." : "Approve"}
+                        {actionLoading === u._id ? (
+                          <span className="loading loading-spinner loading-xs"></span>
+                        ) : (
+                          "Approve"
+                        )}
                       </button>
                       <button
                         className="btn btn-error btn-sm"
                         disabled={actionLoading === u._id}
                         onClick={() => reject(u._id)}
                       >
-                        {actionLoading === u._id ? "..." : "Reject"}
+                        {actionLoading === u._id ? (
+                          <span className="loading loading-spinner loading-xs"></span>
+                        ) : (
+                          "Reject"
+                        )}
                       </button>
                     </td>
                   </tr>
