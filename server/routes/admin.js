@@ -5,6 +5,23 @@ const { authenticate, requireAdmin } = require("../middleware/auth")
 
 const router = express.Router()
 
+// --- NEW ROUTE: Get Admin Stats ---
+router.get("/stats", authenticate, requireAdmin, async (req, res) => {
+  try {
+    // Count users based on their status
+    const totalUsers = await User.countDocuments({ approvalStatus: "approved" })
+    const pendingUsers = await User.countDocuments({ approvalStatus: "pending" })
+
+    res.json({
+      totalUsers,
+      pendingUsers
+    })
+  } catch (err) {
+    console.error("Stats error:", err)
+    res.status(500).json({ message: "Server error" })
+  }
+})
+
 // Get all users pending admin approval
 router.get("/pending-users", authenticate, requireAdmin, async (req, res) => {
   try {
@@ -12,7 +29,7 @@ router.get("/pending-users", authenticate, requireAdmin, async (req, res) => {
       .select("name email batch center createdAt")
       .sort({ createdAt: 1 })
 
-    res.json({ users })
+    res.json(users) // Changed from { users } to users to match your frontend expected array format
   } catch (err) {
     console.error("List pending users error:", err)
     res.status(500).json({ message: "Server error" })
@@ -20,7 +37,8 @@ router.get("/pending-users", authenticate, requireAdmin, async (req, res) => {
 })
 
 // Approve a user registration
-router.post("/approve/:id", authenticate, requireAdmin, async (req, res) => {
+router.post("/approve-user/:id", authenticate, requireAdmin, async (req, res) => {
+  // Note: Changed route from /approve/:id to /approve-user/:id to match frontend
   try {
     const user = await User.findByIdAndUpdate(
       req.params.id,
@@ -40,7 +58,6 @@ router.post("/approve/:id", authenticate, requireAdmin, async (req, res) => {
       })
     } catch (emailErr) {
       console.error("Approval email error:", emailErr)
-      // Continue despite email error
     }
 
     res.json({ message: "User approved successfully" })
@@ -51,7 +68,8 @@ router.post("/approve/:id", authenticate, requireAdmin, async (req, res) => {
 })
 
 // Reject a user registration
-router.post("/reject/:id", authenticate, requireAdmin, async (req, res) => {
+router.post("/reject-user/:id", authenticate, requireAdmin, async (req, res) => {
+  // Note: Changed route from /reject/:id to /reject-user/:id to match frontend
   try {
     const { reason } = req.body || {}
     const user = await User.findByIdAndUpdate(
@@ -73,7 +91,6 @@ router.post("/reject/:id", authenticate, requireAdmin, async (req, res) => {
       })
     } catch (emailErr) {
       console.error("Rejection email error:", emailErr)
-      // Continue despite email error
     }
 
     res.json({ message: "User rejected successfully" })
@@ -84,4 +101,3 @@ router.post("/reject/:id", authenticate, requireAdmin, async (req, res) => {
 })
 
 module.exports = router
-
