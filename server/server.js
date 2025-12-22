@@ -20,18 +20,12 @@ const app = express()
 const httpServer = createServer(app)
 
 // Socket.io setup
-// const io = new Server(httpServer, {
-//   cors: {
-//     origin: process.env.CLIENT_URL || "http://localhost:3000",
-//     methods: ["GET", "POST"],
-//   },
-// })
-
 const io = new Server(httpServer, {
   cors: {
     origin: [
       process.env.CLIENT_URL || "http://localhost:3000",
-      "https://alumni-portal-frontend-vdvb.onrender.com"  // Add your frontend URL here
+      "http://localhost:8080", // <--- ADD THIS
+      "https://alumni-portal-frontend-vdvb.onrender.com"
     ],
     methods: ["GET", "POST"],
     credentials: true
@@ -42,10 +36,12 @@ const io = new Server(httpServer, {
 app.use(cors({
   origin: [
     "https://alumni-portal-frontend-vdvb.onrender.com",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://localhost:8080" // <--- ADD THIS
   ],
   credentials: true
 }))
+
 app.use(express.json())
 app.use("/uploads", express.static("uploads"))
 
@@ -450,7 +446,3 @@ const PORT = process.env.PORT || 5000
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-
-
-// can you add functionality in which if a user forgot its password , user can reset the password using email via sending a otp.
-// also remove login and signup funtionality using phone

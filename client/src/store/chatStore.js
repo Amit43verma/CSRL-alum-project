@@ -4,7 +4,7 @@ import axios from "axios"
 import toast from "react-hot-toast"
 
 // Use Vite environment variables
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+const API_URL = import.meta.env.VITE_API_URL || "/api"
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000"
 
 // Import auth store to get current user
